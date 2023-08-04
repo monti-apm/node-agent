@@ -1,7 +1,7 @@
 {
   "name": "@monti-apm/agent",
   "version": "0.0.1",
-  "description": "Monti APM Agent",
+  "description": "Performance Monitoring for Node.js",
   "main": "./dist/",
   "scripts": {
     "clean": "rimraf dist",
