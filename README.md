@@ -11,3 +11,7 @@ What we should track:
 - [ ] Garbage Collection Duration
 
 Most of these might be shared between the Meteor Agent so probably should be in the core library.
+
+# Supported Versions
+
+Node.js 12 and above.
