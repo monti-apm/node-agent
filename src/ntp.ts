@@ -8,7 +8,7 @@ interface NtpOptions {
 }
 
 export class Ntp {
-  private isDisabled: boolean;
+  private readonly isDisabled: boolean;
   private readonly path: string = '/simplentp/sync';
   private endpoint = 'https://enginex.kadira.io';
   private diff: number;
@@ -33,7 +33,16 @@ export class Ntp {
     });
   }
 
-  private static _now(): number {
+  static _instance: Ntp;
+
+  static get instance() {
+    if (!Ntp._instance) {
+      Ntp._instance = new Ntp();
+    }
+    return Ntp._instance;
+  }
+
+  static _now(): number {
     const now = Date.now();
 
     if (typeof now === 'number') {
