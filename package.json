@@ -10,13 +10,13 @@
     "lint": "eslint src --cache",
     "lintfix": "eslint src --fix",
     "test:dist": "mocha 'dist/**/*.test.js' --exit --watch=false",
-    "test": "mocha src/**/*.test.js --require=@swc/register --exit --watch=false",
+    "test": "mocha --extension=ts --require=@swc/register --file=src/tests/setup.ts --exit --watch=false src/**/*.test.ts",
     "test:watch": "nodemon --exec 'npm run test' -e js --watch src",
     "prepublishOnly": "npm run clean && npm run build && npm run types"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/monti-apm/monti-apm-core.git"
+    "url": "git+https://github.com/monti-apm/node-agent.git"
   },
   "keywords": [
     "kadira",
@@ -35,8 +35,7 @@
     "@swc/cli": "^0.1.62",
     "@swc/core": "^1.3.71",
     "@swc/register": "^0.1.10",
-    "@types/backoff": "^2.5.2",
-    "@types/chai": "^4.3.4",
+    "@types/chai": "^4.3.5",
     "@types/debug": "^4.1.8",
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.5.0",
@@ -44,25 +43,26 @@
     "@types/websocket": "^1.0.5",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
-    "chai": "4.3.7",
+    "chai": "^4.3.7",
     "eslint": "8.45.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-prettier": "4.2.1",
-    "mocha": "10.2.0",
+    "mocha": "^10.2.0",
     "nodemon": "2.0.21",
     "prettier": "2.8.8",
     "rimraf": "4.4.1",
-    "typescript": "4.9.5"
+    "typescript": "5.1.6"
   },
   "dependencies": {
     "axios": "1.4.0",
     "cross-fetch": "^4.0.0",
     "debug": "^4.3.4",
     "eventemitter2": "6.4.9",
+    "json-stringify-safe": "^5.0.1",
     "monti-apm-core": "^1.7.5",
     "monti-apm-sketches-js": "^0.0.3",
     "remeda": "1.24.0",
-    "uuid": "9.0.0"
+    "uuid": "^9.0.0"
   },
   "volta": {
     "node": "20.5.0"

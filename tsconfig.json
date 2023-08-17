@@ -7,7 +7,7 @@
     "declaration": true,
     "esModuleInterop": true,
     "incremental": true,
-    "module": "CommonJS",
+    "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitAny": false,
     "noUnusedLocals": false,
@@ -23,16 +23,10 @@
       ]
     },
     "typeRoots": [
-      "./node_modules/@types",
       "./src/@types"
     ]
   },
   "include": [
-    "src"
-  ],
-  "exclude": [
-    "src/tests",
-    "**/*.test.js",
-    "**/*.test.ts"
+    "src/**/*"
   ]
 }
