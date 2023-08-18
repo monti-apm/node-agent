@@ -1,4 +1,4 @@
-import LRU from 'lru-cache';
+import { LRUCache } from 'lru-cache';
 import jsonStringify from 'json-stringify-safe';
 
 interface IData {
@@ -9,12 +9,12 @@ interface IData {
 }
 
 export class DocSzCache {
-    public items: LRU<string, DocSzCacheItem>;
+    public items: LRUCache<string, DocSzCacheItem>;
     public maxValues: number;
     cpuUsage: number;
 
     constructor(maxItems: number, maxValues: number) {
-        this.items = new LRU({ max: maxItems });
+        this.items = new LRUCache({ max: maxItems });
         this.maxValues = maxValues;
         this.cpuUsage = 0;
     }
