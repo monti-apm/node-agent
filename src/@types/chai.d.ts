@@ -1,16 +1,16 @@
-import type Chai from 'chai'
-import type Mocha from 'mocha'
+import type Chai from 'chai';
+import type Mocha from 'mocha';
 
 declare global {
-  var expect: Chai.ExpectStatic;
-  var assert: Chai.AssertStatic;
-  var should: Chai.Should;
+  let expect: Chai.ExpectStatic;
+  let assert: Chai.AssertStatic;
+  let should: Chai.Should;
 
-  var describe: Mocha.SuiteFunction;
-  var it: Mocha.TestFunction;
+  let describe: Mocha.SuiteFunction;
+  let it: Mocha.TestFunction;
 
-  var before: Mocha.HookFunction;
-  var after: Mocha.HookFunction;
-  var beforeEach: Mocha.HookFunction;
-  var afterEach: Mocha.HookFunction;
+  let before: Mocha.HookFunction;
+  let after: Mocha.HookFunction;
+  let beforeEach: Mocha.HookFunction;
+  let afterEach: Mocha.HookFunction;
 }

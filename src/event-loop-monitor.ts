@@ -1,10 +1,12 @@
 import { EventEmitter } from 'events';
 
-function isNode () {
-  return typeof process !== 'undefined' && process.versions && process.versions.node;
+function isNode() {
+  return (
+    typeof process !== 'undefined' && process.versions && process.versions.node
+  );
 }
 
-function polyfillNow () {
+function polyfillNow() {
   const [seconds, nanoseconds] = process.hrtime();
 
   return seconds * 1000 + nanoseconds / 1000000;
@@ -17,7 +19,7 @@ export class EventLoopMonitor extends EventEmitter {
   _totalLag = 0;
   _lastWatchTime: number | null = null;
 
-  constructor (timeoutMillis: number) {
+  constructor(timeoutMillis: number) {
     super();
     this.timeoutMillis = timeoutMillis;
     this._watchLag = this._watchLag.bind(this);
@@ -28,7 +30,7 @@ export class EventLoopMonitor extends EventEmitter {
     this._registerNowFunc();
   }
 
-  start () {
+  start() {
     this._stopped = false;
     this._lastWatchTime = null;
     this._startTime = Date.now();
@@ -38,12 +40,12 @@ export class EventLoopMonitor extends EventEmitter {
     this._detectLag();
   }
 
-  stop () {
+  stop() {
     this._stopped = true;
     this.removeAllListeners('lag');
   }
 
-  status () {
+  status() {
     let pctBlock = 0;
     let elapsedTime = 0;
     if (!this._stopped && this._lastWatchTime) {
@@ -51,10 +53,10 @@ export class EventLoopMonitor extends EventEmitter {
       pctBlock = (this._totalLag / elapsedTime) * 100;
     }
 
-    let statusObject = {
+    const statusObject = {
       pctBlock,
       elapsedTime,
-      totalLag: this._totalLag
+      totalLag: this._totalLag,
     };
 
     this._startTime = this._lastWatchTime;
@@ -63,20 +65,20 @@ export class EventLoopMonitor extends EventEmitter {
     return statusObject;
   }
 
-  _watchLag (lag) {
+  _watchLag(lag) {
     this._lastWatchTime = Date.now();
     this._totalLag += lag;
   }
 
-  _detectLag () {
-    let self = this;
-    let start = self._now();
+  _detectLag() {
+    const self = this;
+    const start = self._now();
 
     setTimeout(function () {
-      let end = self._now();
-      let elapsedTime = end - start;
-      let realDiff = elapsedTime - self.timeoutMillis;
-      let lag = Math.max(0, realDiff);
+      const end = self._now();
+      const elapsedTime = end - start;
+      const realDiff = elapsedTime - self.timeoutMillis;
+      const lag = Math.max(0, realDiff);
 
       if (!self._stopped) {
         self.emit('lag', lag);
@@ -85,11 +87,11 @@ export class EventLoopMonitor extends EventEmitter {
     }, self.timeoutMillis);
   }
 
-  _now (): number {
+  _now(): number {
     throw new Error('Not Implemented');
   }
 
-  _registerNowFunc () {
+  _registerNowFunc() {
     if (isNode()) {
       const [major] = process.versions.node.split('.').map(Number);
 
@@ -99,14 +101,18 @@ export class EventLoopMonitor extends EventEmitter {
       }
 
       const {
-        performance
-        // eslint-disable-next-line global-require
+        performance,
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
       } = require('perf_hooks');
       this._now = performance.now;
       return;
     }
 
-    if (typeof window !== 'undefined' && window.performance && window.performance.now) {
+    if (
+      typeof window !== 'undefined' &&
+      window.performance &&
+      window.performance.now
+    ) {
       this._now = window.performance.now;
       return;
     }

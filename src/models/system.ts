@@ -1,15 +1,15 @@
-import { EventLoopMonitor } from "@/event-loop-monitor";
-import { DDSketch } from "monti-apm-sketches-js";
-import {GCMetrics} from "@/gc";
-import { Ntp } from "@/ntp";
-import { MontiApmAgent } from "@/monti-apm-agent";
+import { EventLoopMonitor } from '@/event-loop-monitor';
+import { DDSketch } from 'monti-apm-sketches-js';
+import { GCMetrics } from '@/gc';
+import { Ntp } from '@/ntp';
+import { MontiApmAgent } from '@/monti-apm-agent';
 
 type CPUHistoryEntry = {
   time: number;
   usage: number;
   sys: number;
   user: number;
-}
+};
 
 type MetricPayload = {
   startTime: number;
@@ -34,9 +34,9 @@ type MetricPayload = {
   pcpuUser: number;
   pcpuSystem: number;
   cpuHistory: CPUHistoryEntry[];
-}
+};
 
-export class System  {
+export class System {
   static _instance: System;
   static getInstance() {
     if (!System._instance) {
@@ -53,7 +53,7 @@ export class System  {
   gcMetrics: GCMetrics;
   cpuTime: [number, number];
   previousCpuUsage: NodeJS.CpuUsage;
-  cpuHistory: CPUHistoryEntry[] = []
+  cpuHistory: CPUHistoryEntry[] = [];
   currentCpuUsage = 0;
 
   constructor() {
@@ -63,12 +63,12 @@ export class System  {
     this.sessionTimeout = 1000 * 60 * 30;
 
     this.evloopHistogram = new DDSketch({
-      alpha: 0.02
+      alpha: 0.02,
     });
 
     this.evloopMonitor = new EventLoopMonitor(200);
     this.evloopMonitor.start();
-    this.evloopMonitor.on('lag', lag => {
+    this.evloopMonitor.on('lag', (lag) => {
       // store as microsecond
       this.evloopHistogram.add(lag * 1000);
     });
@@ -84,18 +84,18 @@ export class System  {
     }, 2000);
   }
 
-  buildPayload () {
+  buildPayload() {
+    const now = Ntp._now();
 
-    let now = Ntp._now();
-
-    let metrics: MetricPayload = {} as any;
+    const metrics: MetricPayload = {} as any;
 
     metrics.startTime = Ntp.instance.syncTime(this.startTime);
     metrics.endTime = Ntp.instance.syncTime(now);
 
-    let memoryUsage = process.memoryUsage();
+    const memoryUsage = process.memoryUsage();
     metrics.memory = memoryUsage.rss / (1024 * 1024);
-    metrics.memoryArrayBuffers = (memoryUsage.arrayBuffers || 0) / (1024 * 1024);
+    metrics.memoryArrayBuffers =
+      (memoryUsage.arrayBuffers || 0) / (1024 * 1024);
     metrics.memoryExternal = memoryUsage.external / (1024 * 1024);
     metrics.memoryHeapUsed = memoryUsage.heapUsed / (1024 * 1024);
     metrics.memoryHeapTotal = memoryUsage.heapTotal / (1024 * 1024);
@@ -111,7 +111,7 @@ export class System  {
     metrics.pctEvloopBlock = this.evloopMonitor.status().pctBlock;
     metrics.evloopHistogram = this.evloopHistogram;
     this.evloopHistogram = new DDSketch({
-      alpha: 0.02
+      alpha: 0.02,
     });
 
     metrics.gcMajorDuration = this.gcMetrics.metrics.gcMajor;
@@ -126,37 +126,37 @@ export class System  {
     metrics.pcpuSystem = 0;
 
     if (this.cpuHistory.length > 0) {
-      let lastCpuUsage = this.cpuHistory[this.cpuHistory.length - 1];
+      const lastCpuUsage = this.cpuHistory[this.cpuHistory.length - 1];
       metrics.pcpu = lastCpuUsage.usage * 100;
       metrics.pcpuUser = lastCpuUsage.user * 100;
       metrics.pcpuSystem = lastCpuUsage.sys * 100;
     }
 
-    metrics.cpuHistory = this.cpuHistory.map(entry => ({
+    metrics.cpuHistory = this.cpuHistory.map((entry) => ({
       time: Ntp.instance.syncTime(entry.time),
       usage: entry.usage,
       sys: entry.sys,
-      user: entry.user
+      user: entry.user,
     }));
 
     this.cpuHistory = [];
     this.startTime = now;
-    return {systemMetrics: [metrics]};
+    return { systemMetrics: [metrics] };
   }
 
-  cpuUsage () {
-    let elapTimeMS = hrtimeToMS(process.hrtime(this.cpuTime));
-    let elapUsage = process.cpuUsage(this.previousCpuUsage);
-    let elapUserMS = elapUsage.user / 1000;
-    let elapSystMS = elapUsage.system / 1000;
-    let totalUsageMS = elapUserMS + elapSystMS;
-    let totalUsagePercent = totalUsageMS / elapTimeMS;
+  cpuUsage() {
+    const elapTimeMS = hrtimeToMS(process.hrtime(this.cpuTime));
+    const elapUsage = process.cpuUsage(this.previousCpuUsage);
+    const elapUserMS = elapUsage.user / 1000;
+    const elapSystMS = elapUsage.system / 1000;
+    const totalUsageMS = elapUserMS + elapSystMS;
+    const totalUsagePercent = totalUsageMS / elapTimeMS;
 
     this.cpuHistory.push({
       time: Ntp._now(),
       usage: totalUsagePercent,
       user: elapUserMS / elapTimeMS,
-      sys: elapSystMS / elapUsage.system
+      sys: elapSystMS / elapUsage.system,
     });
 
     this.currentCpuUsage = totalUsagePercent * 100;
@@ -166,7 +166,7 @@ export class System  {
     this.previousCpuUsage = process.cpuUsage();
   }
 
-  handleSessionActivity (msg, session) {
+  handleSessionActivity(msg, session) {
     if (msg.msg === 'connect' && !msg.session) {
       this.countNewSession(session);
     } else if (['sub', 'method'].indexOf(msg.msg) !== -1) {
@@ -175,21 +175,21 @@ export class System  {
       }
     }
     session._activeAt = Date.now();
-  };
+  }
 
-  countNewSession (session) {
+  countNewSession(session) {
     if (!isLocalAddress(session.socket)) {
       this.newSessions++;
     }
   }
 
-  isSessionActive (session) {
-    let inactiveTime = Date.now() - session._activeAt;
+  isSessionActive(session) {
+    const inactiveTime = Date.now() - session._activeAt;
     return inactiveTime < this.sessionTimeout;
   }
 }
 
-function hrtimeToMS (hrtime) {
+function hrtimeToMS(hrtime) {
   return hrtime[0] * 1000 + hrtime[1] / 1000000;
 }
 
@@ -197,17 +197,19 @@ function hrtimeToMS (hrtime) {
 
 // http://regex101.com/r/iF3yR3/2
 // eslint-disable-next-line no-useless-escape
-let isLocalHostRegex = /^(?:.*\.local|localhost)(?:\:\d+)?|127(?:\.\d{1,3}){3}|192\.168(?:\.\d{1,3}){2}|10(?:\.\d{1,3}){3}|172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2}$/;
+const isLocalHostRegex =
+  /^(?:.*\.local|localhost)(?::\d+)?|127(?:\.\d{1,3}){3}|192\.168(?:\.\d{1,3}){2}|10(?:\.\d{1,3}){3}|172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2}$/;
 
 // http://regex101.com/r/hM5gD8/1
-let isLocalAddressRegex = /^127(?:\.\d{1,3}){3}|192\.168(?:\.\d{1,3}){2}|10(?:\.\d{1,3}){3}|172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2}$/;
+const isLocalAddressRegex =
+  /^127(?:\.\d{1,3}){3}|192\.168(?:\.\d{1,3}){2}|10(?:\.\d{1,3}){3}|172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2}$/;
 
-function isLocalAddress (socket) {
-  let host = socket.headers['host'];
+function isLocalAddress(socket) {
+  const host = socket.headers['host'];
   if (host) {
     return isLocalHostRegex.test(host);
   }
-  let address = socket.headers['x-forwarded-for'] || socket.remoteAddress;
+  const address = socket.headers['x-forwarded-for'] || socket.remoteAddress;
   if (address) {
     return isLocalAddressRegex.test(address);
   }

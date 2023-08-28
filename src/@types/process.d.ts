@@ -1,6 +1,5 @@
 declare namespace NodeJS {
   interface Process extends EventEmitter {
-
     /**
      * @internal
      * @deprecated

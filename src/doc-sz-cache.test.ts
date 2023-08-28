@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { LRUCache } from 'lru-cache';
-import { DocSzCache, DocSzCacheItem } from "./doc-sz-cache";
+import { DocSzCache, DocSzCacheItem } from './doc-sz-cache';
 
 describe('DocSize Cache', () => {
   describe('DocSzCache', () => {
@@ -33,39 +33,37 @@ describe('DocSize Cache', () => {
 
     it('should correctly retrieve size', () => {
       const cache = new DocSzCache(5, 3);
-      let size = cache.getSize('c1', 'q1', 'o1', []);
+      const size = cache.getSize('c1', 'q1', 'o1', []);
       expect(size).to.equal(0);
     });
 
     it('should correctly score item based on CPU usage', () => {
       const cache = new DocSzCache(5, 10);
-      let item = new DocSzCacheItem(10);
+      const item = new DocSzCacheItem(10);
       item.values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
       item.updated = Date.now();
       cache.cpuUsage = 100;
 
-      let score = cache.getItemScore(item);
+      const score = cache.getItemScore(item);
       expect(score).to.be.within(0, 0.001);
     });
 
     it('should determine if an update is needed based on item score', () => {
       const cache = new DocSzCache(5, 10);
-      let item = new DocSzCacheItem(10);
+      const item = new DocSzCacheItem(10);
       item.values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
       item.updated = Date.now();
 
-      let score = 0;
+      const score = 0;
       cache.getItemScore = function () {
         return score;
       };
 
       expect(cache.needsUpdate(item)).to.be.false;
     });
-
   });
 
   describe('DocSzCacheItem', () => {
-
     it('should correctly instantiate the constructor', () => {
       const item = new DocSzCacheItem(10);
       expect(item.maxValues).to.equal(10);

@@ -2,26 +2,26 @@ import { PerformanceObserver, constants, performance } from 'perf_hooks';
 
 export class GCMetrics {
   observer?: PerformanceObserver;
-  started: boolean = false;
+  started = false;
   metrics: Record<string, number>;
 
-  constructor () {
+  constructor() {
     this.metrics = {};
 
     this.reset();
   }
 
-  start () {
+  start() {
     if (this.started) {
       return false;
     }
 
     this.started = true;
 
-    this.observer = new PerformanceObserver(list => {
-      list.getEntries().forEach(entry => {
+    this.observer = new PerformanceObserver((list) => {
+      list.getEntries().forEach((entry) => {
         // @ts-ignore @todo check if kind is still a thing
-          let metric = this._mapKindToMetric(entry.kind);
+        const metric = this._mapKindToMetric(entry.kind);
 
         if (!metric) {
           return;
@@ -34,7 +34,7 @@ export class GCMetrics {
     this.observer.observe({ entryTypes: ['gc'], buffered: false });
   }
 
-  _mapKindToMetric (gcKind: number): string | undefined {
+  _mapKindToMetric(gcKind: number): string | undefined {
     switch (gcKind) {
       case constants.NODE_PERFORMANCE_GC_MAJOR:
         return 'gcMajor';
@@ -44,18 +44,18 @@ export class GCMetrics {
         return 'gcIncremental';
       case constants.NODE_PERFORMANCE_GC_WEAKCB:
         return 'gcWeakCB';
-        default:
+      default:
         // no default
         console.log(`Monti APM: Unrecognized GC Kind: ${gcKind}`);
     }
   }
 
-  reset () {
+  reset() {
     this.metrics = {
       gcMajor: 0,
       gcMinor: 0,
       gcIncremental: 0,
-      gcWeakCB: 0
+      gcWeakCB: 0,
     };
   }
 }

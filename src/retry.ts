@@ -1,5 +1,3 @@
-import { randomBytes } from 'crypto';
-
 interface RetryOptions {
   baseTimeout?: number;
   exponent?: number;
@@ -19,13 +17,13 @@ export class Retry {
   private retryTimer: NodeJS.Timeout | null;
 
   constructor({
-                baseTimeout = 1000,
-                exponent = 2.2,
-                maxTimeout = 5 * 60000,
-                minTimeout = 10,
-                minCount = 2,
-                fuzz = 0.5
-              }: RetryOptions = {}) {
+    baseTimeout = 1000,
+    exponent = 2.2,
+    maxTimeout = 5 * 60000,
+    minTimeout = 10,
+    minCount = 2,
+    fuzz = 0.5,
+  }: RetryOptions = {}) {
     this.baseTimeout = baseTimeout;
     this.exponent = exponent;
     this.maxTimeout = maxTimeout;
@@ -49,15 +47,11 @@ export class Retry {
 
     let timeout = Math.min(
       this.maxTimeout,
-      this.baseTimeout * Math.pow(this.exponent, count)
+      this.baseTimeout * Math.pow(this.exponent, count),
     );
 
-    timeout *= this.randomFraction() * this.fuzz + (1 - this.fuzz / 2);
+    timeout *= Math.random() * this.fuzz + (1 - this.fuzz / 2);
     return Math.ceil(timeout);
-  }
-
-  private randomFraction(): number {
-    return parseInt(randomBytes(8).toString('hex'), 16) / 0xffffffffffffffff;
   }
 
   public retryLater(count: number, fn: () => void): number {

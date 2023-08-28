@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { Ntp } from "@/ntp";
+import { Ntp } from '@/ntp';
 
 describe('Ntp', () => {
   describe('Ntp._now()', () => {
@@ -12,7 +12,7 @@ describe('Ntp', () => {
     it('should handle Date.now as Date object', () => {
       const oldDateNow = Date.now;
 
-      Date.now = function(): any {
+      Date.now = function (): any {
         return new Date();
       };
 

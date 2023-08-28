@@ -1,6 +1,6 @@
-import { Retry } from "@/retry";
-import { isServer } from "@/environment";
-import fetch from 'cross-fetch'
+import { Retry } from '@/retry';
+import { isServer } from '@/environment';
+import fetch from 'cross-fetch';
 
 interface NtpOptions {
   endpoint?: string;
@@ -29,7 +29,7 @@ export class Ntp {
     this.reSync = new Retry({
       baseTimeout: 1000 * 60,
       maxTimeout: 1000 * 60 * 10,
-      minCount: 0
+      minCount: 0,
     });
   }
 
@@ -83,7 +83,7 @@ export class Ntp {
       baseTimeout: 1000 * 20,
       maxTimeout: 1000 * 60,
       minCount: 1,
-      minTimeout: 0
+      minTimeout: 0,
     });
 
     const syncTime = () => {
@@ -99,7 +99,7 @@ export class Ntp {
     };
 
     const cacheDns = () => {
-      this.getServerTime(err => {
+      this.getServerTime((err) => {
         if (!err) {
           calculateTimeDiff();
         } else {
@@ -129,7 +129,9 @@ export class Ntp {
     syncTime();
   }
 
-  public getServerTime(callback: (err?: Error, serverTime?: number) => void): void {
+  public getServerTime(
+    callback: (err?: Error, serverTime?: number) => void,
+  ): void {
     if (this.endpoint === null) {
       throw new Error('getServerTime requires the endpoint to be set');
     }
@@ -138,26 +140,28 @@ export class Ntp {
       throw new Error('getServerTime requires NTP to be enabled');
     }
 
-    const url = `${this.endpoint}${this.path}?noCache=${new Date().getTime()}-${Math.random()}`;
+    const url = `${this.endpoint}${
+      this.path
+    }?noCache=${new Date().getTime()}-${Math.random()}`;
 
     fetch(url, {
       method: 'GET',
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
     })
-      .then(response => {
+      .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         return response.text();
       })
-      .then(content => {
+      .then((content) => {
         const serverTime = parseInt(content, 10);
         callback(undefined, serverTime);
       })
-      .catch(error => {
+      .catch((error) => {
         callback(error);
       });
   }
@@ -165,14 +169,19 @@ export class Ntp {
 
 function getLogger(): (message?: any, ...optionalParams: any[]) => void {
   if (isServer) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return require('debug')('kadira:ntp');
   }
 
   return function log(message?: any, ...optionalParams: any[]) {
     let canLog = false;
     try {
-      canLog = global.localStorage.getItem('LOG_KADIRA') !== null && typeof console !== 'undefined';
-    } catch (e) { }
+      canLog =
+        global.localStorage.getItem('LOG_KADIRA') !== null &&
+        typeof console !== 'undefined';
+    } catch (e) {
+      /* empty */
+    }
 
     if (!canLog) {
       return;
