@@ -1,5 +1,5 @@
 export * from './monti-apm-agent'
-export * from './system'
+export * from './models/system'
 export * from './gc'
 export * from './doc-sz-cache'
 export * from './ntp'
