@@ -105,7 +105,6 @@ export class System {
 
     metrics.activeRequests = process._getActiveRequests().length;
     metrics.activeHandles = process._getActiveHandles().length;
-    metrics.activeStreams = process._getActiveStreams().length;
 
     // track eventloop metrics
     metrics.pctEvloopBlock = this.evloopMonitor.status().pctBlock;
