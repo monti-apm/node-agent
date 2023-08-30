@@ -12,6 +12,8 @@ export class MontiApmAgent {
   appId: string;
   hostname: string;
 
+  payloadTimeout: number;
+
   core: Monti;
 
   docSzCache = new DocSzCache(100000, 10);
@@ -23,11 +25,12 @@ export class MontiApmAgent {
     appSecret: string,
     endpoint: string = config.endpoint,
     hostname = config.hostname || os.hostname(),
+    payloadTimeout = 20_000,
   ) {
     this.appId = appId;
     this.appSecret = appSecret;
     this.hostname = hostname;
-
+    this.payloadTimeout = payloadTimeout;
     this.systemModel = System.getInstance();
 
     this.core = new Monti({
@@ -37,6 +40,31 @@ export class MontiApmAgent {
       hostname,
       agentVersion: `node-agent@${version}`,
     });
+
+    this.core
+      ._checkAuth()
+      .then(() => {
+        console.log('Monti APM: Connected');
+
+        // Kadira._sendAppStats();
+        this.schedulePayloadSend();
+      })
+      .catch(function (err) {
+        if (err.message === 'Unauthorized') {
+          console.log(
+            'Monti APM: Authentication failed, check your "appId" & "appSecret"',
+          );
+        } else {
+          console.log(`Monti APM: Unable to connect. ${err.message}`);
+        }
+      });
+  }
+
+  schedulePayloadSend() {
+    setTimeout(() => {
+      this.schedulePayloadSend();
+      this.sendPayload();
+    }, this.payloadTimeout);
   }
 
   static connect(
@@ -62,6 +90,8 @@ export class MontiApmAgent {
 
   async sendPayload() {
     const payload = await this.buildPayload();
+
+    console.log('Sending payload', payload);
 
     await this.core.sendData(payload);
   }
