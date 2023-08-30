@@ -1,9 +1,9 @@
 import { DocSzCache } from '@/doc-sz-cache';
-import { Monti } from 'monti-apm-core';
+import { Monti } from '@monti-apm/core';
 import os from 'os';
 import { version } from '../package.json';
-import config from 'config';
 import { System } from '@/models/system';
+import { config } from '@/config';
 
 export class MontiApmAgent {
   static instance: MontiApmAgent;
@@ -21,8 +21,8 @@ export class MontiApmAgent {
   constructor(
     appId: string,
     appSecret: string,
-    endpoint: string = config.get('Monti.endpoint'),
-    hostname = (config.get('Monti.hostname') as string) || os.hostname(),
+    endpoint: string = config.endpoint,
+    hostname = config.hostname || os.hostname(),
   ) {
     this.appId = appId;
     this.appSecret = appSecret;
@@ -67,9 +67,6 @@ export class MontiApmAgent {
   }
 }
 
-if (config.get('Monti.appId') && config.get('Monti.appSecret')) {
-  MontiApmAgent.connect(
-    config.get('Monti.appId'),
-    config.get('Monti.appSecret'),
-  );
+if (config.appId && config.appSecret) {
+  MontiApmAgent.connect(config.appId, config.appSecret);
 }

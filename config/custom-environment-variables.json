@@ -1,8 +1,0 @@
-{
-  "Monti": {
-    "appId": "MONTI_APP_ID",
-    "appSecret": "MONTI_APP_SECRET",
-    "endpoint": "MONTI_ENDPOINT",
-    "hostname": "MONTI_HOSTNAME"
-  }
-}

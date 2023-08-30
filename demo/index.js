@@ -1,3 +1,5 @@
+import '@monti-apm/agent';
+
 let count = 0;
 
 console.log(process.env.MONTI_APP_ID);

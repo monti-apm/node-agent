@@ -12,7 +12,8 @@
     "test:dist": "mocha 'dist/**/*.test.js' --exit --watch=false",
     "test": "mocha --extension=ts --require=@swc/register --file=src/tests/setup.ts --exit --watch=false src/**/*.test.ts",
     "test:watch": "nodemon --exec 'npm run test' -e js --watch src",
-    "prepublishOnly": "npm run clean && npm run build && npm run types"
+    "compile": "npm run clean && npm run build && npm run types",
+    "prepublishOnly": "npm run compile"
   },
   "repository": {
     "type": "git",
@@ -58,13 +59,12 @@
   },
   "dependencies": {
     "axios": "1.4.0",
-    "config": "^3.3.9",
+    "cosmiconfig": "^8.2.0",
     "cross-fetch": "^4.0.0",
     "debug": "^4.3.4",
     "eventemitter2": "6.4.9",
     "json-stringify-safe": "^5.0.1",
     "lru-cache": "^10.0.1",
-    "monti-apm-core": "^1.7.5",
     "monti-apm-sketches-js": "^0.0.3",
     "remeda": "1.24.0",
     "uuid": "^9.0.0"

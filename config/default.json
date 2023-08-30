@@ -1,8 +1,0 @@
-{
-  "Monti": {
-    "appId": "",
-    "appSecret": "",
-    "endpoint": "https://engine.montiapm.com",
-    "hostname": ""
-  }
-}
