@@ -11,7 +11,7 @@
     "lintfix": "eslint src --fix",
     "test:dist": "mocha 'dist/**/*.test.js' --exit --watch=false",
     "test": "mocha --extension=ts --require=@swc/register --file=src/tests/setup.ts --exit --watch=false src/**/*.test.ts",
-    "test:watch": "nodemon --exec 'npm run test' -e js --watch src",
+    "test:watch": "nodemon --exec 'npm run test' -e js,ts --watch src",
     "compile": "npm run clean && npm run build && npm run types",
     "prepublishOnly": "npm run compile"
   },

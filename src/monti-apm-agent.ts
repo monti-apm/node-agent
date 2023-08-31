@@ -3,7 +3,9 @@ import { Monti } from '@monti-apm/core';
 import os from 'os';
 import { version } from '../package.json';
 import { System } from '@/models/system';
-import { config } from '@/config';
+import { getConfig } from '@/config';
+
+const config = getConfig();
 
 export class MontiApmAgent {
   static instance: MontiApmAgent;
@@ -63,7 +65,7 @@ export class MontiApmAgent {
   schedulePayloadSend() {
     setTimeout(() => {
       this.schedulePayloadSend();
-      this.sendPayload();
+      this.sendPayload().catch(console.error);
     }, this.payloadTimeout);
   }
 
