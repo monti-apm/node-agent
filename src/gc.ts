@@ -3,11 +3,9 @@ import { constants, PerformanceObserver } from 'perf_hooks';
 export class GCMetrics {
   observer?: PerformanceObserver;
   started = false;
-  metrics: Record<string, number>;
+  metrics: Record<string, number> = {};
 
   constructor() {
-    this.metrics = {};
-
     this.reset();
   }
 

@@ -3,6 +3,7 @@ import { DDSketch } from 'monti-apm-sketches-js';
 import { GCMetrics } from '@/gc';
 import { Ntp } from '@/ntp';
 import { MontiApmAgent } from '@/monti-apm-agent';
+import { hrtimeToMS } from '@/utils';
 
 type CPUHistoryEntry = {
   time: number;
@@ -105,7 +106,6 @@ export class System {
     metrics.activeRequests = process._getActiveRequests().length;
     metrics.activeHandles = process._getActiveHandles().length;
 
-    // track eventloop metrics
     metrics.pctEvloopBlock = this.evloopMonitor.status().pctBlock;
     metrics.evloopHistogram = this.evloopHistogram;
     this.evloopHistogram = new DDSketch({
@@ -162,53 +162,5 @@ export class System {
 
     this.cpuTime = process.hrtime();
     this.previousCpuUsage = process.cpuUsage();
-  }
-
-  handleSessionActivity(msg, session) {
-    if (msg.msg === 'connect' && !msg.session) {
-      this.countNewSession(session);
-    } else if (['sub', 'method'].indexOf(msg.msg) !== -1) {
-      if (!this.isSessionActive(session)) {
-        this.countNewSession(session);
-      }
-    }
-    session._activeAt = Date.now();
-  }
-
-  countNewSession(session) {
-    if (!isLocalAddress(session.socket)) {
-      this.newSessions++;
-    }
-  }
-
-  isSessionActive(session) {
-    const inactiveTime = Date.now() - session._activeAt;
-    return inactiveTime < this.sessionTimeout;
-  }
-}
-
-function hrtimeToMS(hrtime) {
-  return hrtime[0] * 1000 + hrtime[1] / 1000000;
-}
-
-// ------------------------------------------------------------------------- //
-
-// http://regex101.com/r/iF3yR3/2
-// eslint-disable-next-line no-useless-escape
-const isLocalHostRegex =
-  /^(?:.*\.local|localhost)(?::\d+)?|127(?:\.\d{1,3}){3}|192\.168(?:\.\d{1,3}){2}|10(?:\.\d{1,3}){3}|172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2}$/;
-
-// http://regex101.com/r/hM5gD8/1
-const isLocalAddressRegex =
-  /^127(?:\.\d{1,3}){3}|192\.168(?:\.\d{1,3}){2}|10(?:\.\d{1,3}){3}|172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2}$/;
-
-function isLocalAddress(socket) {
-  const host = socket.headers['host'];
-  if (host) {
-    return isLocalHostRegex.test(host);
-  }
-  const address = socket.headers['x-forwarded-for'] || socket.remoteAddress;
-  if (address) {
-    return isLocalAddressRegex.test(address);
   }
 }

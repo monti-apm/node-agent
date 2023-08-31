@@ -2,7 +2,7 @@ import { DocSzCache } from '@/doc-sz-cache';
 import { Monti } from '@monti-apm/core';
 import os from 'os';
 import { version } from '../package.json';
-import { System } from '@/models/system';
+import { System } from '@/system';
 import { getConfig } from '@/config';
 
 const config = getConfig();
