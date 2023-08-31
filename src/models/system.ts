@@ -23,7 +23,6 @@ type MetricPayload = {
   newSessions: number;
   activeRequests: number;
   activeHandles: number;
-  activeStreams: number;
   pctEvloopBlock: number;
   evloopHistogram: any;
   gcMajorDuration: number;

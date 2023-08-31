@@ -104,7 +104,7 @@ export class EventLoopMonitor extends EventEmitter {
         performance,
         // eslint-disable-next-line @typescript-eslint/no-var-requires
       } = require('perf_hooks');
-      this._now = performance.now;
+      this._now = performance.now.bind(performance);
       return;
     }
 
@@ -113,7 +113,7 @@ export class EventLoopMonitor extends EventEmitter {
       window.performance &&
       window.performance.now
     ) {
-      this._now = window.performance.now;
+      this._now = window.performance.now.bind(window.performance);
       return;
     }
 

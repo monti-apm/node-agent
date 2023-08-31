@@ -11,10 +11,5 @@ declare namespace NodeJS {
      * @internal
      */
     _getActiveHandles(): any[];
-
-    /**
-     * @internal
-     */
-    _getActiveStreams(): any[];
   }
 }
