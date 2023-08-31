@@ -8,13 +8,13 @@ interface RetryOptions {
 }
 
 export class Retry {
-  private baseTimeout: number;
-  private exponent: number;
-  private maxTimeout: number;
-  private minTimeout: number;
-  private minCount: number;
-  private fuzz: number;
-  private retryTimer: NodeJS.Timeout | null;
+  baseTimeout: number;
+  exponent: number;
+  maxTimeout: number;
+  minTimeout: number;
+  minCount: number;
+  fuzz: number;
+  retryTimer: NodeJS.Timeout | null;
 
   constructor({
     baseTimeout = 1000,
@@ -33,14 +33,14 @@ export class Retry {
     this.retryTimer = null;
   }
 
-  public clear(): void {
+  clear(): void {
     if (this.retryTimer) {
       clearTimeout(this.retryTimer);
     }
     this.retryTimer = null;
   }
 
-  private _timeout(count: number): number {
+  timeout(count: number): number {
     if (count < this.minCount) {
       return this.minTimeout;
     }
@@ -51,11 +51,12 @@ export class Retry {
     );
 
     timeout *= Math.random() * this.fuzz + (1 - this.fuzz / 2);
+
     return Math.ceil(timeout);
   }
 
-  public retryLater(count: number, fn: () => void): number {
-    const timeout = this._timeout(count);
+  retryLater(count: number, fn: () => void): number {
+    const timeout = this.timeout(count);
     if (this.retryTimer) {
       clearTimeout(this.retryTimer);
     }
