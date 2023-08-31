@@ -1,4 +1,4 @@
-import { PerformanceObserver, constants, performance } from 'perf_hooks';
+import { constants, PerformanceObserver } from 'perf_hooks';
 
 export class GCMetrics {
   observer?: PerformanceObserver;
