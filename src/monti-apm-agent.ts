@@ -1,7 +1,7 @@
 import { DocSzCache } from '@/doc-sz-cache';
 import { Monti } from '@monti-apm/core';
 import os from 'os';
-import { version } from '../package.json';
+import { name, version } from '../package.json';
 import { System } from '@/system';
 import { getConfig } from '@/config';
 
@@ -40,26 +40,41 @@ export class MontiApmAgent {
       appSecret,
       endpoint,
       hostname,
-      agentVersion: `node-agent@${version}`,
+      agentVersion: `${name}@${version}`,
     });
 
-    this.core
-      ._checkAuth()
-      .then(() => {
-        console.log('Monti APM: Connected');
+    this.handshake();
+  }
 
-        // Kadira._sendAppStats();
-        this.schedulePayloadSend();
-      })
-      .catch(function (err) {
-        if (err.message === 'Unauthorized') {
-          console.log(
-            'Monti APM: Authentication failed, check your "appId" & "appSecret"',
-          );
-        } else {
-          console.log(`Monti APM: Unable to connect. ${err.message}`);
-        }
-      });
+  async sendAppStats() {
+    const appStats = {
+      nodeVersion: process.version,
+      protocolVersion: '1.0.0',
+    };
+
+    return this.core.sendData({
+      startTime: new Date(),
+      appStats,
+    });
+  }
+
+  async handshake() {
+    try {
+      await this.core._checkAuth();
+
+      console.log('Monti APM: Connected');
+
+      this.schedulePayloadSend();
+      await this.sendAppStats();
+    } catch (err: any) {
+      if (err.message === 'Unauthorized') {
+        console.log(
+          'Monti APM: Authentication failed, check your "appId" & "appSecret"',
+        );
+      } else {
+        console.log(`Monti APM: Unable to connect. ${err.message}`);
+      }
+    }
   }
 
   schedulePayloadSend() {
