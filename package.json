@@ -1,0 +1,77 @@
+{
+  "name": "@monti-apm/agent",
+  "version": "0.0.1",
+  "description": "Performance Monitoring for Node.js",
+  "main": "./dist/",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "swc src --out-dir=dist",
+    "types": "tsc --emitDeclarationOnly --declaration --outDir dist",
+    "lint": "eslint src --cache",
+    "lintfix": "eslint src --fix",
+    "test:dist": "mocha 'dist/**/*.test.js' --exit --watch=false",
+    "test": "mocha --extension=ts --require=@swc/register --file=src/tests/setup.ts --exit --watch=false ./src/**/*.test.ts",
+    "test:watch": "nodemon --exec 'npm run test' -e js,ts --watch src",
+    "compile": "npm run clean && npm run build && npm run types",
+    "prepublishOnly": "npm run compile"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/monti-apm/node-agent.git"
+  },
+  "keywords": [
+    "kadira",
+    "monti apm",
+    "monti apm agent",
+    "node agent",
+    "apm"
+  ],
+  "author": "Monti APM",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/monti-apm/node-agent/issues"
+  },
+  "homepage": "https://github.com/monti-apm/node-agent#readme",
+  "devDependencies": {
+    "@swc/cli": "^0.1.62",
+    "@swc/core": "^1.3.71",
+    "@swc/register": "^0.1.10",
+    "@types/chai": "^4.3.5",
+    "@types/config": "^3.3.0",
+    "@types/debug": "^4.1.8",
+    "@types/json-stringify-safe": "^5.0.0",
+    "@types/lru-cache": "^7.10.10",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^20.5.0",
+    "@types/sinon": "^10.0.16",
+    "@types/uuid": "^9.0.2",
+    "@types/websocket": "^1.0.5",
+    "@typescript-eslint/eslint-plugin": "5.62.0",
+    "@typescript-eslint/parser": "5.62.0",
+    "chai": "^4.3.7",
+    "eslint": "8.45.0",
+    "eslint-config-prettier": "8.8.0",
+    "eslint-plugin-prettier": "4.2.1",
+    "mocha": "^10.2.0",
+    "nodemon": "2.0.21",
+    "prettier": "2.8.8",
+    "rimraf": "4.4.1",
+    "sinon": "^15.2.0",
+    "typescript": "5.1.6"
+  },
+  "dependencies": {
+    "axios": "1.4.0",
+    "cosmiconfig": "^8.2.0",
+    "cross-fetch": "^4.0.0",
+    "debug": "^4.3.4",
+    "eventemitter2": "6.4.9",
+    "json-stringify-safe": "^5.0.1",
+    "lru-cache": "^10.0.1",
+    "monti-apm-sketches-js": "^0.0.3",
+    "remeda": "1.24.0",
+    "uuid": "^9.0.0"
+  },
+  "volta": {
+    "node": "20.5.0"
+  }
+}

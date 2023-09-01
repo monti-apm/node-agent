@@ -1,0 +1,9 @@
+---
+title: Bootstrap
+---
+graph
+    A[Kadira._startInstrumenting] -- attempt to connect with env first --> B[Kadira._connectWithEnv]
+    A -- with settings afterwards --> C[Kadira._connectWithSettings]
+
+    B --> D[Kadira.connect]
+    C -- after each the `connect` method is overridden so it throws whenever it is called again --> D
